@@ -1,44 +1,24 @@
-html {
-	scroll-behavior: smooth;
+.nav-link > i {
+	font-size: 15pt;
+    position: relative;
+    top: 2px; font-size: 15pt;
 }
 
-.nav > li > ul {
-	list-style-type: none;
-}
-.nav > li.active > a {
-	color: white !important;
-	    box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(156, 39, 176, 0.4) !important;
-}
-.nav > li.active > a > i {
-	color: white !important;
+.nav-link > span {
+    padding: 16px 0px 16px 8px;
+    font-weight: bolder;
 }
 
-.nav > li.active > ul > li.active > a {
-	background: #b5b5b5 !important;
-    box-shadow: 0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(206, 206, 206, 0.4);
+.nav-link > img{
+	width: 40px;
+	height:40px;
 }
-.nav > li > ul > li:first-child > a{
-    margin: 10px 15px 0 !important;
-}
-.nav > li > ul > li > a{
-    margin: 0px 15px 0 !important;
-}
-.nav > li > ul {
-	padding-left: 18px;
-}
-.nav > li > a > i.arrow {
-	position: absolute;
-	right: 12px;
-}
-.nav > li > a > i {
-	-webkit-transition: all ease-in-out 300ms;
-	-moz-transition: all ease-in-out 300ms;
-	-o-transition: all ease-in-out 300ms;
-	-ms-transition: all ease-in-out 300ms;
-	transition: all ease-in-out 300ms;
 
-	transform: rotate(0deg); 
+.nav-item > .dropdown-menu li > a {
+	padding: 8px 16px;
 }
-.nav > li > a.show > i {
-	transform: rotate(180deg); 
-}
+.nav-item > .dropdown-menu i {
+	width: 24px;
+	position: relative;
+	top: 2px;
+} 
