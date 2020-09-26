@@ -3,7 +3,6 @@
 // Menonaktifkan Perfect Scrollbar 
 // (karena scrolling menjadi tidak smooth)
 // ---------------------------------------------------
-$('.main-panel').perfectScrollbar('destroy');
 
 // ---------------------------------------------------
 // Mengaktifkan Tooltip
@@ -23,8 +22,8 @@ function buat_notifikasi(notifikasi) {
 	{	
 		icon_type: 'class',
 		type: notifikasi.type,
-		timer: 90000,
-		showProgressbar: true,
+		timer: 1500,
+		showProgressbar: false,
 		placement: {
 			from: 'top',
 			align: 'right'
