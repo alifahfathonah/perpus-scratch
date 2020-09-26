@@ -42,9 +42,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  ------------------------------------------------------------------------------------- */
 
 
-class BukuInduk extends CI_Controller {
+class Peminjaman extends CI_Controller {
 
-	public function index()
+	public function list()
 	{
 		$data = array(
 			'ui_css' => array(),
@@ -56,10 +56,11 @@ class BukuInduk extends CI_Controller {
 				'Peminjaman|fas fa-handshake|' . site_url('peminjaman'),
 				'Laporan|fas fa-clipboard-list|' . site_url('laporan')
 			),
-			'ui_sidebar_active' => 'Buku Induk',
-			'ui_brand' => 'Data Buku Induk',
+			'ui_sidebar_active' => 'Peminjaman',
+			'ui_brand' => 'Peminjaman',
 			'ui_nav_item' => array(
-				'Tambah data|fas fa-plus-circle|' . site_url('bukuinduk/tambah'),
+				'Daftar Peminjaman|fas fa-list-alt|' . site_url('peminjaman/list'),
+				'Tambah data|fas fa-plus-circle|' . site_url('peminjaman/index'),
 			),
 			'ui_nav_active' => '',
 			'ui_js' => array(),
@@ -68,14 +69,14 @@ class BukuInduk extends CI_Controller {
 		$data['logged_user'] = new stdClass();
         $data['logged_user']->nama = 'Badar Wildanie';
         $data['logged_user']->avatar = 'assets/custom/images/user/Annotation 2020-04-02 2208172.png';
-		$this->load->view('buku-induk/list', $data);	
+		$this->load->view('peminjaman/list', $data);	
 	}
 
 
 
-	public function ajax_daftar_buku()
+	public function ajax_daftar_peminjaman()
 	{
-		$this->load->model('BukuIndukModel');
+		$this->load->model('PeminjamanModel');
 
 		$data['limit'] = $this->input->get('limit');
 		$data['page'] = $this->input->get('page');
@@ -84,57 +85,48 @@ class BukuInduk extends CI_Controller {
 		$this->db->start_cache();
 
 		// Pencarian judul buku
-		$judul_buku = $this->input->get('judul_buku');
-		if ($judul_buku != '') {
-			$this->db->like('judul_buku', $judul_buku, 'BOTH');
+		$nama_siswa = $this->input->get('nama_siswa');
+		if ($nama_siswa != '') {
+			$this->db->like('nama_siswa', $nama_siswa, 'BOTH');
 		}
 
 		$this->db->stop_cache();
 
-		$data['data_filtered'] = $this->BukuIndukModel->show($data['limit'], $data['offset'], 'object');
-		$data['data_filtered_count'] = $this->BukuIndukModel->show($data['limit'], $data['offset'], 'count');
+		$data['data_filtered'] = $this->PeminjamanModel->show($data['limit'], $data['offset'], 'object');
+		$data['data_filtered_count'] = $this->PeminjamanModel->show($data['limit'], $data['offset'], 'count');
 		$this->db->flush_cache();
 
-		$this->load->view('buku-induk/ajax-list', $data);
-
-
+		$this->load->view('peminjaman/ajax-list', $data);
 	}
 
 
 
-	public function tambah($submit = FALSE)
+	// Ini halaman tambah transaksi peminjaman
+	public function index($submit = FALSE)
 	{
-		$this->load->model('BukuIndukModel');
+		$this->load->model('PeminjamanModel');
 
 		// Jika parameter submit terisi, maka itu lagi ngesubmit data dari form tambah data
 		// Jika enggak ya berarti lagi menampilkan halaman tambah data
 		if ($submit != FALSE) {
 			$data_tambah = array(
-				'judul_buku' => $this->input->post('judul_buku'),
-				'nomor_induk' => $this->input->post('nomor_induk'),
-				'tanggal_penerimaan' => $this->input->post('tanggal_penerimaan'),
+				'tanggal' => $this->input->post('tanggal'),
+				'waktu' => $this->input->post('waktu'),
+				'nis' => $this->input->post('nis'),
+				'nama_siswa' => $this->input->post('nama_siswa'),
 				'no_panggil' => $this->input->post('no_panggil'),
-				'no_register' => $this->input->post('no_register'),
-				'kode_ddc' => $this->input->post('kode_ddc'),
-				'pengarang' => $this->input->post('pengarang'),
-				'tahun_terbit' => $this->input->post('tahun_terbit'),
-				'penerbit' => $this->input->post('penerbit'),
-				'kota_terbit' => $this->input->post('kota_terbit'),
-				'subjek' => $this->input->post('subjek'),
-				'kategori' => $this->input->post('kategori'),
 				'isbn' => $this->input->post('isbn'),
-				'donatur' => $this->input->post('donatur'),
-				'jumlah_eksemplar' => $this->input->post('jumlah_eksemplar'),
-				'halaman' => $this->input->post('halaman'),
-				'ukuran' => $this->input->post('ukuran'),
-				'harga' => $this->input->post('harga'),
+				'pengarang' => $this->input->post('pengarang'),
+				'judul_buku' => $this->input->post('judul_buku'),
+				'kembali' => $this->input->post('kembali')
 			);
-			$query = $this->BukuIndukModel->insert($data_tambah);
+
+			$query = $this->PeminjamanModel->insert($data_tambah);
 			if ($query) {
-				header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data Berhasil ditambahkan&type=success&icon=fas fa-check-circle');
+				header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data Berhasil ditambahkan&type=success&icon=fas fa-check-circle');
 			}
 			else {
-				header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data gagal ditambahkan&type=danger&icon=fas fa-exclamation-triangle');
+				header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data gagal ditambahkan&type=danger&icon=fas fa-exclamation-triangle');
 			}
 		}
 		else {
@@ -148,10 +140,11 @@ class BukuInduk extends CI_Controller {
 					'Peminjaman|fas fa-handshake|' . site_url('peminjaman'),
 					'Laporan|fas fa-clipboard-list|' . site_url('laporan')
 				),
-				'ui_sidebar_active' => 'Buku Induk',
+				'ui_sidebar_active' => 'Peminjaman',
 				'ui_brand' => 'Data Buku Induk',
 				'ui_nav_item' => array(
-					'Tambah data|fas fa-plus-circle|' . site_url('bukuinduk/tambah'),
+					'Daftar Peminjaman|fas fa-list-alt|' . site_url('peminjaman/list'),
+					'Tambah data|fas fa-plus-circle|' . site_url('peminjaman/index'),
 				),
 				'ui_nav_active' => 'Tambah data',
 				'ui_js' => array(),
@@ -163,44 +156,52 @@ class BukuInduk extends CI_Controller {
 	        $data['logged_user']->avatar = 'assets/custom/images/user/Annotation 2020-04-02 2208172.png';
 
 
-			$this->load->view('buku-induk/tambah', $data);	
+			$this->load->view('peminjaman/tambah', $data);	
 		}
+	}
+
+
+	public function ajax_get_siswa()
+	{
+		$nis = $this->input->get('nis');
+		$this->load->model('SiswaModel');
+		$data = $this->SiswaModel->single('nis', $nis, 'object');
+		echo json_encode($data);
+	}
+
+	public function ajax_get_buku()
+	{
+		$no_panggil = $this->input->get('no_panggil');
+		$this->load->model('BukuIndukModel');
+		$data = $this->BukuIndukModel->single('no_panggil', $no_panggil, 'object');
+		echo json_encode($data);
 	}
 
 	public function edit($id, $submit = FALSE)
 	{
-        $this->load->model('BukuIndukModel');
+        $this->load->model('PeminjamanModel');
 
 		// Jika parameter submit terisi, maka itu lagi ngesubmit data dari form edit
 		// Jika enggak ya berarti lagi menampilkan halaman edit
 		if ($submit != FALSE) {
 			$data_edit = array(
-				'judul_buku' => $this->input->post('judul_buku'),
-				'nomor_induk' => $this->input->post('nomor_induk'),
-				'tanggal_penerimaan' => $this->input->post('tanggal_penerimaan'),
+				'tanggal' => $this->input->post('tanggal'),
+				'waktu' => $this->input->post('waktu'),
+				'nis' => $this->input->post('nis'),
+				'nama_siswa' => $this->input->post('nama_siswa'),
 				'no_panggil' => $this->input->post('no_panggil'),
-				'no_register' => $this->input->post('no_register'),
-				'kode_ddc' => $this->input->post('kode_ddc'),
-				'pengarang' => $this->input->post('pengarang'),
-				'tahun_terbit' => $this->input->post('tahun_terbit'),
-				'penerbit' => $this->input->post('penerbit'),
-				'kota_terbit' => $this->input->post('kota_terbit'),
-				'subjek' => $this->input->post('subjek'),
-				'kategori' => $this->input->post('kategori'),
 				'isbn' => $this->input->post('isbn'),
-				'donatur' => $this->input->post('donatur'),
-				'jumlah_eksemplar' => $this->input->post('jumlah_eksemplar'),
-				'halaman' => $this->input->post('halaman'),
-				'ukuran' => $this->input->post('ukuran'),
-				'harga' => $this->input->post('harga'),
+				'pengarang' => $this->input->post('pengarang'),
+				'judul_buku' => $this->input->post('judul_buku'),
+				'kembali' => $this->input->post('kembali')
 			);
 
-			$query = $this->BukuIndukModel->update($data_edit, $id);
+			$query = $this->PeminjamanModel->update($data_edit, $id);
 			if ($query) {
-				header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data Berhasil diedit&type=success&icon=fas fa-check-circle');
+				header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data Berhasil diedit&type=success&icon=fas fa-check-circle');
 			}
 			else {
-				header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data gagal diedit&type=danger&icon=fas fa-exclamation-triangle');
+				header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data gagal diedit&type=danger&icon=fas fa-exclamation-triangle');
 			}
 		}
 		else {
@@ -214,10 +215,11 @@ class BukuInduk extends CI_Controller {
 					'Peminjaman|fas fa-handshake|' . site_url('peminjaman'),
 					'Laporan|fas fa-clipboard-list|' . site_url('laporan')
 				),
-				'ui_sidebar_active' => 'Buku Induk',
+				'ui_sidebar_active' => 'Peminjaman',
 				'ui_brand' => 'Data Buku Induk',
 				'ui_nav_item' => array(
-					'Tambah data|fas fa-plus-circle|' . site_url('bukuinduk/tambah'),
+					'Daftar Peminjaman|fas fa-list-alt|' . site_url('peminjaman/list'),
+					'Tambah data|fas fa-plus-circle|' . site_url('peminjaman/index'),
 				),
 				'ui_nav_active' => '',
 				'ui_js' => array(),
@@ -229,27 +231,28 @@ class BukuInduk extends CI_Controller {
 	        $data['logged_user']->avatar = 'assets/custom/images/user/Annotation 2020-04-02 2208172.png';
 
 	        // Data buku yang di edit
-	        $data['data_edit'] = $this->BukuIndukModel->single('id', $id, 'object');
+	        $data['data_edit'] = $this->PeminjamanModel->single('id', $id, 'object');
 
-			$this->load->view('buku-induk/edit', $data);	
+			$this->load->view('peminjaman/edit', $data);	
 		}
 	}
 
 	public function delete($id)
 	{
-		$this->load->model('BukuIndukModel');
-		$query = $this->BukuIndukModel->delete($id);
+		$this->load->model('PeminjamanModel');
+		$query = $this->PeminjamanModel->delete($id);
 		if ($query) {
-			header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data Berhasil dihapus&type=success&icon=fas fa-check-circle');
+			header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data Berhasil dihapus&type=success&icon=fas fa-check-circle');
 		}
 		else {
-			header('location:' . site_url('peminjaman/list') . '?notif=oyi&message=Data gagal dihapus&type=danger&icon=fas fa-exclamation-triangle');
+			header('location:' . site_url('bukuinduk') . '?notif=oyi&message=Data gagal dihapus&type=danger&icon=fas fa-exclamation-triangle');
 		}
 
 	}
 
+
 }
 	
-/* End of file BukuInduk.php */
-/* Location: ./application/controllers/BukuInduk.php */
+/* End of file Peminjaman.php */
+/* Location: ./application/controllers/Peminjaman.php */
 ?>
